@@ -507,7 +507,7 @@
         async function loadAdminUsers() {
             const list = document.getElementById('admin-users-list');
             try {
-                const response = await fetch('http://localhost:8080/api/auth/users', {
+                const response = await fetch('/api/auth/users', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const users = await response.json();
@@ -548,7 +548,7 @@
         async function loadAdminProducts() {
             const list = document.getElementById('admin-products-list');
             try {
-                const response = await fetch('http://localhost:8080/api/products');
+                const response = await fetch('/api/products');
                 const products = await response.json();
 
                 document.getElementById('total-products-stat').textContent = products.length;
@@ -574,7 +574,7 @@
             if (!activeList || !deliveredList || !cancelledList) return;
 
             try {
-                const response = await fetch('http://localhost:8080/api/orders', {
+                const response = await fetch('/api/orders', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const orders = await response.json();
@@ -663,7 +663,7 @@
                 description: document.getElementById('prod-desc').value
             };
 
-            const url = id ? `http://localhost:8080/api/products/${id}` : 'http://localhost:8080/api/products';
+            const url = id ? `/api/products/${id}` : '/api/products';
             const method = id ? 'PUT' : 'POST';
 
             try {
@@ -687,7 +687,7 @@
         async function deleteProduct(id) {
             if (!confirm('Are you sure?')) return;
             try {
-                await fetch(`http://localhost:8080/api/products/${id}`, {
+                await fetch(`/api/products/${id}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -706,7 +706,7 @@
 
         async function editProduct(id) {
             try {
-                const response = await fetch(`http://localhost:8080/api/products/${id}`);
+                const response = await fetch(`/api/products/${id}`);
                 const p = await response.json();
 
                 document.getElementById('modal-title').textContent = 'Edit Product';
@@ -728,7 +728,7 @@
 
         async function updateOrderStatus(id, status) {
             try {
-                await fetch(`http://localhost:8080/api/orders/${id}/status?status=${status}`, {
+                await fetch(`/api/orders/${id}/status?status=${status}`, {
                     method: 'PUT',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -739,7 +739,7 @@
         async function deleteOrder(id) {
             if (!confirm('Are you sure you want to permanently delete this order?')) return;
             try {
-                const response = await fetch(`http://localhost:8080/api/orders/${id}`, {
+                const response = await fetch(`/api/orders/${id}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });

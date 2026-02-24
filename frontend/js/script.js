@@ -33,7 +33,7 @@ function checkLoginState() {
 async function loadFeaturedProducts() {
     const featuredContainer = document.getElementById('featured-products');
     try {
-        const response = await fetch('http://localhost:8080/api/products');
+        const response = await fetch('/api/products');
         const products = await response.json();
 
         if (products.length === 0) {

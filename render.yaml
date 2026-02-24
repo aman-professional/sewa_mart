@@ -1,17 +1,12 @@
 services:
   - type: web
-    name: sewa-mart-backend
+    name: sewa-mart
     env: node
-    root: backend
     plan: free
-    buildCommand: "npm install"
-    startCommand: "npm start"
+    buildCommand: "cd backend && npm install"
+    startCommand: "cd backend && npm start"
     envVars:
-      # Add your own values on Render dashboard instead of putting them here.  
-      # Render will replace these with the values defined in the web service.
       - key: MONGODB_URI
         fromSecret: MONGODB_URI
       - key: JWT_SECRET
         fromSecret: JWT_SECRET
-      - key: PORT
-        value: "10000"
