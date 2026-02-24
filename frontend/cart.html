@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart - Sewa Mart</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .cart-container {
+            padding: 4rem 5%;
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-table th,
+        .cart-table td {
+            padding: 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-table th {
+            background: var(--primary-orange);
+            color: white;
+        }
+
+        .cart-item-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .quantity-btn {
+            background: #eee;
+            border: none;
+            padding: 0.5rem 0.8rem;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .total-section {
+            margin-top: 2rem;
+            text-align: right;
+        }
+
+        .total-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-orange);
+        }
+
+        .checkout-btn {
+            background: var(--bright-yellow);
+            color: var(--dark-text);
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            transition: background 0.3s;
+        }
+
+        .checkout-btn:hover {
+            background: var(--primary-orange);
+            color: white;
+        }
+
+        .remove-btn {
+            color: #ff4444;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        .delivery-details {
+            margin-top: 2rem;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        .delivery-details h3 {
+            margin-bottom: 1.5rem;
+            color: var(--primary-orange);
+        }
+
+        .delivery-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .delivery-form {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .delivery-form .form-group {
+            margin-bottom: 0;
+        }
+
+        .delivery-form input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 0.5rem;
+        }
+
+        .delivery-form label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <h1 onclick="window.location.href='index.html'" style="cursor:pointer">Sewa<span>Mart</span></h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="cart.html"><i class="fas fa-shopping-cart"></i> Cart <span id="cart-count">0</span></a>
+                </li>
+                <li><a href="login.html" id="login-link">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="cart-container animate-fade">
+        <h2>Your Shopping Cart</h2>
+        <div id="cart-content">
+            <p>Your cart is empty.</p>
+        </div>
+        <div id="delivery-section" style="display: none;">
+            <div class="delivery-details">
+                <h3>Delivery Details</h3>
+                <div class="delivery-form">
+                    <div class="form-group">
+                        <label for="receiverPhone">Receiver Phone*</label>
+                        <input type="tel" id="receiverPhone" required placeholder="Phone number of receiver">
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City*</label>
+                        <input type="text" id="city" required placeholder="City name">
+                    </div>
+                    <div class="form-group">
+                        <label for="street">Street Name/No*</label>
+                        <input type="text" id="street" required placeholder="Street name or number">
+                    </div>
+                    <div class="form-group">
+                        <label for="houseNo">House No (Optional)</label>
+                        <input type="text" id="houseNo" placeholder="House number">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="total-section" id="cart-total-section" style="display: none;">
+            <p>Total Amount: <span class="total-price" id="total-amount">Rs. 0</span></p>
+            <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Sewa Mart. All Rights Reserved.</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCart();
+        });
+
+        function renderCart() {
+            const cartContent = document.getElementById('cart-content');
+            const totalSection = document.getElementById('cart-total-section');
+            const deliverySection = document.getElementById('delivery-section');
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+            if (cart.length === 0) {
+                cartContent.innerHTML = '<p>Your cart is empty.</p>';
+                totalSection.style.display = 'none';
+                deliverySection.style.display = 'none';
+                return;
+            }
+
+            totalSection.style.display = 'block';
+            deliverySection.style.display = 'block';
+            let total = 0;
+
+            let tableHTML = `
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            cart.forEach((item, index) => {
+                const subtotal = item.price * item.quantity;
+                total += subtotal;
+                tableHTML += `
+                    <tr>
+                        <td style="display: flex; align-items: center; gap: 1rem;">
+                            <img src="${item.imageUrl || 'https://via.placeholder.com/60x60?text=Product'}" class="cart-item-img">
+                            <span>${item.name}</span>
+                        </td>
+                        <td>Rs. ${item.price}</td>
+                        <td>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">-</button>
+                                <span>${item.quantity}</span>
+                                <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
+                            </div>
+                        </td>
+                        <td>Rs. ${subtotal}</td>
+                        <td><button class="remove-btn" onclick="removeItem(${index})"><i class="fas fa-trash"></i></button></td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</tbody></table>`;
+            cartContent.innerHTML = tableHTML;
+            document.getElementById('total-amount').textContent = `Rs. ${total}`;
+        }
+
+        function updateQuantity(index, change) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart[index].quantity += change;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+            updateCartIcon();
+        }
+
+        function removeItem(index) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+            updateCartIcon();
+        }
+
+        async function checkout() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login to checkout.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const receiverPhone = document.getElementById('receiverPhone').value;
+            const city = document.getElementById('city').value;
+            const street = document.getElementById('street').value;
+            const houseNo = document.getElementById('houseNo').value;
+
+            if (!receiverPhone || !city || !street) {
+                alert('Please fill in all required delivery details.');
+                return;
+            }
+
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const userId = localStorage.getItem('userEmail'); // Using email as ID for simplicity
+            const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            // Capture location
+            let location = null;
+            try {
+                const pos = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
+                    });
+                });
+                location = {
+                    latitude: pos.coords.latitude,
+                    longitude: pos.coords.longitude,
+                    timestamp: new Date()
+                };
+            } catch (err) {
+                console.warn('Geolocation failed or denied:', err);
+            }
+
+            const orderData = {
+                userId: userId,
+                products: cart.map(item => ({ productId: item.id, quantity: item.quantity })),
+                totalAmount: totalAmount,
+                deliveryDetails: {
+                    receiverPhone,
+                    city,
+                    street,
+                    houseNo
+                },
+                orderLocation: location // Include captured location
+            };
+
+            try {
+                const response = await fetch('http://localhost:8080/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                if (response.ok) {
+                    alert('Order placed successfully!');
+                    localStorage.removeItem('cart');
+                    window.location.href = 'index.html';
+                } else {
+                    const errData = await response.json();
+                    alert(`Failed to place order: ${errData.message || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error('Error during checkout:', error);
+                alert('An error occurred during checkout.');
+            }
+        }
+    </script>
+</body>
+
+</html>

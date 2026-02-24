@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sewa Mart - Fresh Eggs, Meat & Grocery</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <h1>Sewa<span>Mart</span></h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="cart.html"><i class="fas fa-shopping-cart"></i> Cart <span id="cart-count">0</span></a>
+                </li>
+                <li><a href="login.html" id="login-link">Login</a></li>
+
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero animate-fade">
+            <div class="container hero-content">
+                <h2 class="animate-slide">Freshness Delivered to Your Doorstep</h2>
+                <p class="animate-slide" style="animation-delay: 0.2s;">Quality Poultry, Fruits, and Grocery at the Best
+                    Prices.</p>
+                <a href="products.html" class="btn-primary animate-bounce">Shop Now</a>
+            </div>
+        </section>
+
+        <section class="categories animate-fade" style="animation-delay: 0.4s; padding: 6rem 0;">
+            <div class="container">
+                <h2 class="section-title">Our Premium Categories</h2>
+                <div class="category-grid">
+                    <div class="category-card" onclick="window.location.href='products.html?category=Eggs'">
+                        <i class="fas fa-egg"></i>
+                        <h3>Eggs</h3>
+                        <p>Farm fresh daily</p>
+                    </div>
+                    <div class="category-card" onclick="window.location.href='products.html?category=Meat'">
+                        <i class="fas fa-drumstick-bite"></i>
+                        <h3>Chicken Meat</h3>
+                        <p>Clean and healthy</p>
+                    </div>
+                    <div class="category-card" onclick="window.location.href='products.html?category=Fruits'">
+                        <i class="fas fa-apple-alt"></i>
+                        <h3>Fruits</h3>
+                        <p>Fresh from orchard</p>
+                    </div>
+                    <div class="category-card" onclick="window.location.href='products.html?category=Mart'">
+                        <i class="fas fa-shopping-basket"></i>
+                        <h3>Mart Products</h3>
+                        <p>Daily essentials</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="featured animate-fade" style="animation-delay: 0.6s; padding: 6rem 0;">
+            <div class="container">
+                <h2 class="section-title">Featured Products</h2>
+                <div id="featured-products" class="product-grid">
+                    <!-- Products will be loaded here via JS -->
+                    <div class="loading-shimmer">Loading fresh products...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Sewa Mart. All Rights Reserved.</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

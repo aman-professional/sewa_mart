@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Sewa Mart</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <h1 onclick="window.location.href='index.html'" style="cursor:pointer">Sewa<span>Mart</span></h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="cart.html"><i class="fas fa-shopping-cart"></i> Cart <span id="cart-count">0</span></a>
+                </li>
+                <li><a href="login.html" id="login-link">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="products-hero">
+            <div class="container">
+                <h2>Our Whole Fresh World</h2>
+                <p>From our farm to your kitchen, quality you can taste.</p>
+            </div>
+        </section>
+
+        <section class="filter-section">
+            <div class="container">
+                <div class="category-pills" id="category-pills">
+                    <button class="pill-btn active" onclick="setCategory('all')">All Freshness</button>
+                    <button class="pill-btn" onclick="setCategory('Eggs')">Organic Eggs</button>
+                    <button class="pill-btn" onclick="setCategory('Meat')">Healthy Meat</button>
+                    <button class="pill-btn" onclick="setCategory('Fruits')">Seasonal Fruits</button>
+                    <button class="pill-btn" onclick="setCategory('Mart')">Mart Essentials</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="all-products">
+            <div class="container">
+                <div id="products-list" class="product-grid">
+                    <div class="loading-shimmer">
+                        <i class="fas fa-leaf fa-3x" style="color: var(--primary-orange); margin-bottom: 1rem;"></i>
+                        <span>Curating the best for you...</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Sewa Mart. All Rights Reserved.</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category') || 'all';
+            setCategory(category, false);
+        });
+
+        function setCategory(category, shouldLoad = true) {
+            // Update active pill
+            document.querySelectorAll('.pill-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.includes(category) || (category === 'all' && btn.textContent === 'All Freshness')) {
+                    btn.classList.add('active');
+                }
+            });
+
+            if (shouldLoad) loadProducts(category);
+            else loadProducts(category);
+        }
+
+        async function loadProducts(category = 'all') {
+            const productsList = document.getElementById('products-list');
+            // Show shimmer while loading
+            productsList.innerHTML = `
+                <div class="loading-shimmer">
+                    <i class="fas fa-leaf fa-3x animate-bounce" style="color: var(--primary-orange); margin-bottom: 1rem;"></i>
+                    <span>Refreshing our stock...</span>
+                </div>
+            `;
+
+            let url = 'http://localhost:8080/api/products';
+            // Note: The Node.js backend might handle filtering differently than Spring Boot. 
+            // For now, let's filter on the frontend if the backend doesn't have a specific category endpoint yet,
+            // or we can just fetch all and filter.
+
+            try {
+                const response = await fetch(url);
+                let products = await response.json();
+
+                if (category && category !== 'all') {
+                    products = products.filter(p => p.category === category);
+                }
+
+                if (products.length === 0) {
+                    productsList.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 5rem;"><i class="fas fa-search fa-3x" style="color: #eee; margin-bottom: 1rem;"></i><p>No products found in this category.</p></div>';
+                    return;
+                }
+
+                productsList.innerHTML = products.map(product => `
+                    <div class="product-card animate-fade">
+                        <div class="product-image-container">
+                            <img src="${product.imageUrl || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80'}" alt="${product.name}" class="product-image">
+                        </div>
+                        <div class="product-info">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <h3>${product.name}</h3>
+                                <span style="background: #fff5f0; color: var(--primary-orange); padding: 5px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: 700;">${product.category}</span>
+                            </div>
+                            <p>${product.description || 'Premium quality selection for your family.'}</p>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+                                <p class="product-price">Rs. ${product.price}</p>
+                                <button class="add-to-cart" onclick="addToCart('${product.id}', '${product.name}', ${product.price}, '${product.imageUrl}')">
+                                    <i class="fas fa-cart-plus"></i> Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading products:', error);
+                productsList.innerHTML = '<p>Error loading products. Make sure your local server is running.</p>';
+            }
+        }
+    </script>
+</body>
+
+</html>
